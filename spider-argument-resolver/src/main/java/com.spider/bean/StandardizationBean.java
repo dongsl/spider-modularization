@@ -1,15 +1,15 @@
 package com.spider.bean;
 
 
-public class StandardizationBean {
+public class StandardizationBean<T>  {
 
-    private Object rsData;
+    private T data;
 
-    public Object getRsData() {
-        return rsData;
+    public T getData() {
+        return data;
     }
 
-    public void setRsData(Object rsData) {
-        this.rsData = rsData;
+    public void setData(T data) {
+        this.data = data;
     }
 }

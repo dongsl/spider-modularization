@@ -104,20 +104,30 @@ public abstract class CustomerHandlerMethodArgumentResolver implements HandlerMe
                 //获取所有 ResponseBean类型的 信息
                 //将data中的数据转换为list
                 standardizationBean = (StandardizationBean) returnValue;
-                if (standardizationBean.getRsData() instanceof List) {
-                    dataList = (List) standardizationBean.getRsData();
-                } else if (standardizationBean.getRsData() instanceof Object) {
-                    dataList = Arrays.asList(standardizationBean.getRsData());
+                if (standardizationBean.getData() instanceof List) {
+                    dataList = (List) standardizationBean.getData();
+                } else if (standardizationBean.getData() instanceof Object) {
+                    dataList = Arrays.asList(standardizationBean.getData());
                 }
             }
             if (null == standardizationBean) return;
+
+
+            Map<String, Map> dictionaryMasterMap = (Map) standardMap.remove(DICTIONARY);
 
             //设置最顶层模版信息
             for (Map.Entry<String, Object> standardMapEntry : standardMap.entrySet()) {
                 String key = standardMapEntry.getKey();
                 Object value = standardMapEntry.getValue();
                 if (value instanceof String) {
-                    standardMapEntry.setValue(getField(standardizationBean, "_", (String) value)); //多字段 使用 _ 拼接
+                    Object returnV = getField(standardizationBean, "_", (String) value);
+                    if (!CollectionUtils.isEmpty(dictionaryMasterMap)) {
+                        Map<String, String> fieldDictionaryMap = dictionaryMasterMap.get(key);
+                        if (!CollectionUtils.isEmpty(fieldDictionaryMap) && fieldDictionaryMap.containsKey(returnV)) {
+                            returnV = fieldDictionaryMap.get(returnV);
+                        }
+                    }
+                    standardMapEntry.setValue(returnV); //多字段 使用 _ 拼接
                 }
             }
 
@@ -154,7 +164,7 @@ public abstract class CustomerHandlerMethodArgumentResolver implements HandlerMe
                             //转换字典码值
                             if (null != dictionaryMap && dictionaryMap.containsKey(entry.getKey())) {
                                 Map<Object, String> fieldDictionaryMap = dictionaryMap.get(entry.getKey());
-                                if (fieldDictionaryMap.containsKey(dataValue)) {
+                                if (!CollectionUtils.isEmpty(fieldDictionaryMap) && fieldDictionaryMap.containsKey(dataValue)) {
                                     dataValue = fieldDictionaryMap.get(dataValue);
                                 } else {
                                     dataValue = null;
@@ -277,4 +287,5 @@ public abstract class CustomerHandlerMethodArgumentResolver implements HandlerMe
             return returnType.getGenericParameterType();
         }
     }
+
 }

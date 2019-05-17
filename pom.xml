@@ -7,7 +7,7 @@
     <groupId>spider-modularization</groupId>
     <artifactId>spider-modularization</artifactId>
     <packaging>pom</packaging>
-    <version>2.7.5</version>
+    <version>2.7.1</version>
     <modules>
         <module>spider-argument-resolver</module>
     </modules>
@@ -34,40 +34,7 @@
                 </configuration>
             </plugin>
 
-            <!-- ProGuard混淆插件-->
-            <!--<plugin>
-                <groupId>com.github.wvengen</groupId>
-                <artifactId>proguard-maven-plugin</artifactId>
-                <version>2.0.11</version>
-                <executions>
-                    <execution>
-                        &lt;!&ndash; 混淆时刻，这里是打包的时候混淆&ndash;&gt;
-                        <phase>package</phase>
-                        <goals>
-                            &lt;!&ndash; 指定使用插件的混淆功能 &ndash;&gt;
-                            <goal>proguard</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    &lt;!&ndash; 是否将生成的PG文件安装部署&ndash;&gt;
-                    <attach>true</attach>
-                    &lt;!&ndash; 是否混淆&ndash;&gt;
-                    <obfuscate>true</obfuscate>
-                    &lt;!&ndash; 指定生成文件分类 &ndash;&gt;
-                    <attachArtifactClassifier>pg</attachArtifactClassifier>
-                    <proguardInclude>${basedir}/proguard.conf</proguardInclude>
-                    <libs>
-                        <lib>${java.home}/lib/rt.jar</lib>
-                        <lib>${java.home}/lib/jce.jar</lib>
-                    </libs>
-                    &lt;!&ndash; 对什么东西进行加载，这里仅有classes成功，不可能对配置文件及JSP混淆吧&ndash;&gt;
-                    <injar>classes</injar>
-                    <outjar>abc-pg.jar</outjar>
-                    &lt;!&ndash; 输出目录&ndash;&gt;
-                    <outputDirectory>${project.build.directory}</outputDirectory>
-                </configuration>
-            </plugin>-->
+            <!--
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.8.1</version>
@@ -83,16 +50,16 @@
                 <configuration>
                     <message>Maven artifacts for ${project.version}</message>
                     <noJekyll>true</noJekyll>
-                    <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory><!--本地jar地址-->
-                    <branch>refs/heads/mvn-repo</branch><!--分支-->
+                    <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>&lt;!&ndash;本地jar地址&ndash;&gt;
+                    <branch>refs/heads/mvn-repo</branch>&lt;!&ndash;分支&ndash;&gt;
                     <merge>true</merge>
 
                     <includes>
                         <include>**/*</include>
 
                     </includes>
-                    <repositoryName>spider-modularization</repositoryName><!--对应github上创建的仓库名称 name-->
-                    <repositoryOwner>dongsl</repositoryOwner><!--github 仓库所有者-->
+                    <repositoryName>spider-modularization</repositoryName>&lt;!&ndash;对应github上创建的仓库名称 name&ndash;&gt;
+                    <repositoryOwner>dongsl</repositoryOwner>&lt;!&ndash;github 仓库所有者&ndash;&gt;
 
                 </configuration>
 
@@ -104,7 +71,7 @@
                         <phase>deploy</phase>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
 
