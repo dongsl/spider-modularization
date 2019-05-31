@@ -27,6 +27,7 @@ public abstract class CustomerHandlerMethodArgumentResolver implements HandlerMe
 
     protected static final List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
     private static final String SPLIT = "split";
+    private static final String DATA = "DATA";
     private static final String LIST = "LIST";
     private static final String ELEMENT_ATTR = "ELEMENT-ATTR";
     private static final String DICTIONARY = "DICTIONARY";
@@ -123,8 +124,12 @@ public abstract class CustomerHandlerMethodArgumentResolver implements HandlerMe
                     Object returnV = getField(standardizationBean, "_", (String) value);
                     if (!CollectionUtils.isEmpty(dictionaryMasterMap)) {
                         Map<String, String> fieldDictionaryMap = dictionaryMasterMap.get(key);
-                        if (!CollectionUtils.isEmpty(fieldDictionaryMap) && fieldDictionaryMap.containsKey(returnV)) {
-                            returnV = fieldDictionaryMap.get(returnV);
+                        if (!CollectionUtils.isEmpty(fieldDictionaryMap)) {
+                            if (fieldDictionaryMap.containsKey(returnV)) {
+                                returnV = fieldDictionaryMap.get(returnV);
+                            } else if (fieldDictionaryMap.containsKey("OTHER")) {
+                                returnV = fieldDictionaryMap.get("OTHER");
+                            }
                         }
                     }
                     standardMapEntry.setValue(returnV); //多字段 使用 _ 拼接
@@ -138,6 +143,40 @@ public abstract class CustomerHandlerMethodArgumentResolver implements HandlerMe
                     resultInputMap.put(entry.getKey(), dataValue);
                 }
                 standardMap.putAll(resultInputMap);
+            }
+
+            if (standardMap.containsKey(DATA)) {
+                Map<String, Object> fieldMap = (Map) standardMap.remove(DATA);
+                if (!CollectionUtils.isEmpty(dataList)) {
+
+                    Map<String, Map> dictionaryMap = (Map) fieldMap.remove(DICTIONARY);
+                    Object data = dataList.get(0);
+                    for (Map.Entry<String, Object> entry : fieldMap.entrySet()) {
+                        standardMap.put(entry.getKey(), null);
+                        String columnName = entry.getValue().toString();
+                        if (StringUtils.isBlank(columnName)) continue;
+                        Object dataValue = getField(data, "_", columnName.split(","));
+                        if (StringUtils.isEmpty(dataValue.toString())) {
+                            dataValue = getField(standardizationBean, "_", columnName.split(","));
+                            if (StringUtils.isEmpty(dataValue.toString())) continue;
+                        }
+
+                        //转换字典码值
+                        if (null != dictionaryMap && dictionaryMap.containsKey(entry.getKey())) {
+                            Map<Object, String> fieldDictionaryMap = dictionaryMap.get(entry.getKey());
+                            if (!CollectionUtils.isEmpty(fieldDictionaryMap)) {
+                                if (fieldDictionaryMap.containsKey(dataValue)) {
+                                    dataValue = fieldDictionaryMap.get(dataValue);
+                                } else if (fieldDictionaryMap.containsKey("OTHER")) {
+                                    dataValue = fieldDictionaryMap.get("OTHER");
+                                }
+                            } else {
+                                dataValue = null;
+                            }
+                        }
+                        standardMap.put(entry.getKey(), dataValue);
+                    }
+                }
             }
 
             if (standardMap.containsKey(LIST)) {
@@ -164,8 +203,12 @@ public abstract class CustomerHandlerMethodArgumentResolver implements HandlerMe
                             //转换字典码值
                             if (null != dictionaryMap && dictionaryMap.containsKey(entry.getKey())) {
                                 Map<Object, String> fieldDictionaryMap = dictionaryMap.get(entry.getKey());
-                                if (!CollectionUtils.isEmpty(fieldDictionaryMap) && fieldDictionaryMap.containsKey(dataValue)) {
-                                    dataValue = fieldDictionaryMap.get(dataValue);
+                                if (!CollectionUtils.isEmpty(fieldDictionaryMap)) {
+                                    if (fieldDictionaryMap.containsKey(dataValue)) {
+                                        dataValue = fieldDictionaryMap.get(dataValue);
+                                    } else if (fieldDictionaryMap.containsKey("OTHER")) {
+                                        dataValue = fieldDictionaryMap.get("OTHER");
+                                    }
                                 } else {
                                     dataValue = null;
                                 }
@@ -181,8 +224,11 @@ public abstract class CustomerHandlerMethodArgumentResolver implements HandlerMe
                         contentMaps.put(listKey.toString(), contentMap);
                     }
                 }
-                fieldMap.clear();
-                fieldMap.putAll(contentMaps);
+                //fieldMap.clear();
+                //fieldMap.putAll(contentMaps);
+
+                standardMap.remove(LIST);
+                standardMap.put(LIST, contentMaps);
             }
 
 

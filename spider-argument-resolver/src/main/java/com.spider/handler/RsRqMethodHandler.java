@@ -64,7 +64,19 @@ public class RsRqMethodHandler extends CustomerHandlerMethodArgumentResolver imp
         String identity = urlInfo[1];
         return BootstrapConfigHandler.getStandardConfig(identity, methodName, nodeName);
     }
-
+    /*String[] urlInfo = splitUrlInfo(webRequest);
+        if ("citic".equals(urlInfo[1])) {
+        InputStream in = inputMessage.getBody();
+        StringBuffer bodystr = new StringBuffer();
+        byte b[] = new byte[3072];
+        while (in.read(b) != -1) {
+            bodystr.append(new String(b, "UTF-8"));
+        }
+        Map<String, Object> inputMap = XmlHandler.xml2Map(bodystr.toString());
+        initRequestBean(standardMap, inputMap, requestBean);
+        ThreadLocalHandler.threadLocal.set(inputMap);
+        return requestBean;
+    }*/
 
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
